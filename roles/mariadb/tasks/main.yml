@@ -1,0 +1,68 @@
+---
+
+
+- name: install mariadb
+  yum: name={{ item }} state=installed
+  with_items:
+  - mariadb-galera-server
+  - MySQL-python
+  - galera
+  tags: install
+
+- name: template
+  template: src=my.j2 dest=/etc/my.cnf force=yes
+  tags: init
+
+- name: make data file
+  file: path=/data2/mysql_data state=directory owner=mysql group=mysql
+  tags: init
+
+- name: init db file
+  shell: mysql_install_db
+  tags: init
+
+- name: start mariadb-galera-server
+  shell: "/usr/libexec/mysqld --wsrep-new-cluster --user=root >>/dev/null &"
+  when: hostname == "con-itools-node-01"
+  tags: init
+
+- name: mysql_upgrade
+  shell: mysql_upgrade
+  when: hostname == "con-itools-node-01"
+  tags: init
+
+- name: change mysql user pass
+  mysql_user: name=root password={{ mysql_root_pass }} host_all=yes priv=*.*:ALL,GRANT
+  when: hostname == "con-itools-node-01"
+  tags: init
+
+- name: Removes all anonymous user accounts
+  mysql_user: login_user=root login_password={{ mysql_root_pass }} name="" host_all=yes state=absent
+  when: hostname == "con-itools-node-01"
+  tags: dele
+
+- name: Removes test Database
+  mysql_db: login_user=root login_password={{ mysql_root_pass }} name=test state=absent
+  when: hostname == "con-itools-node-01"
+  tags: dele
+
+- name: restart all mariadb-galera-server
+  service: name=mariadb state=started enabled=yes
+  when: hostname != "con-itools-node-01"
+  tags: last
+
+- name: ADD haproxy user
+  mysql_user: login_user=root login_password={{ mysql_root_pass }} name="haproxy" host="%" state=present
+  when: hostname == "con-itools-node-01"
+  tags: haproxy
+
+
+- name: mariadb-galera-server restart
+  copy: src=mariadb_restart_onboot.sh dest=/root/.mariadb_restart_onboot.sh owner=root group=root mode=0755 force=yes
+  when: hostname == "con-itools-node-01"
+  tags: last
+
+- name: mariadb-galera-server restart
+  shell: echo '/usr/bin/sh /root/.mariadb_restart_onboot.sh' >> /etc/rc.d/rc.local
+  when: hostname == "con-itools-node-01"
+  tags: last

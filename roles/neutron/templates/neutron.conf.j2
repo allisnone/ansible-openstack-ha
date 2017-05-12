@@ -1,0 +1,86 @@
+[DEFAULT]
+
+bind_host = {{ hostname }}
+api_workers = 2
+metadata_workers = 2
+
+core_plugin = ml2
+service_plugins = router
+allow_overlapping_ips = True
+rpc_backend = rabbit
+auth_strategy = keystone
+notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+nova_url = http://{{ vip_addr_int }}:8774/v2
+
+log_dir = /var/log/neutron
+
+# ha l3 agent
+l3_ha = True
+max_l3_agents_per_router = 3
+min_l3_agents_per_router = 2
+[matchmaker_redis]
+
+
+[matchmaker_ring]
+
+
+[quotas]
+
+
+[agent]
+
+
+[keystone_authtoken]
+
+auth_uri = http://{{ vip_addr_int }}:5000
+auth_url = http://{{ vip_addr_int }}:35357
+auth_plugin = password
+project_domain_id = default
+user_domain_id = default
+project_name = service
+username = {{ neutron_user }}
+password = {{ neutron_pass }}
+
+
+[database]
+
+connection = mysql+pymysql://{{ neutron_db_user}}:{{ neutron_db_pass}}@{{ vip_addr_int }}/{{ neutron_db_name }}
+
+[nova]
+
+auth_url = http://{{ vip_addr_int }}:35357
+auth_plugin = password
+project_domain_id = default
+user_domain_id = default
+region_name = RegionOne
+project_name = service
+username = {{ nova_user }}
+password = {{ nova_pass }}
+
+[oslo_concurrency]
+
+lock_path = $state_path/lock
+
+[oslo_policy]
+
+
+[oslo_messaging_amqp]
+
+
+[oslo_messaging_qpid]
+
+
+[oslo_messaging_rabbit]
+
+rabbit_durable_queues = true
+rabbit_host = {{ vip_addr_int }}
+rabbit_port = 5672
+rabbit_userid = {{ rabbitmq_user }}
+rabbit_password = {{ rabbitmq_pass }}
+rabbit_retry_interval = 1
+rabbit_retry_backoff = 2
+rabbit_max_retries = 0
+rabbit_ha_queues = true
+
+[qos]

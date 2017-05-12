@@ -1,0 +1,48 @@
+
+# vip
+vip_drivers_ext: eno16777728
+vip_drivers_int: eno33554952
+vip_addr_ext: 10.10.5.100
+vip_addr_int: 172.16.0.130
+
+# mysql
+mysql_login_user: root
+mysql_login_pass: kaixin
+mysql_root_pass: kaixin
+
+# rabbitmq cluster
+rabbitmq_cluster_name: openstack_cluster
+rabbitmq_user: openstack
+rabbitmq_pass: ea1c286c7a696338accebba0204a5352
+
+# keystone
+keystone_auth: e1b0e5a5f1841a64e5ca
+keystone_db_name: keystone
+keystone_db_user: keystone
+keystone_db_pass: 2f05638338746f726b44
+glance_db_name: glance
+glance_db_user: glance
+glance_db_pass: d89b496153d50333
+nova_db_name: nova
+nova_db_user: nova
+nova_db_pass: 5fba3a063fb96a1e
+neutron_db_name: neutron
+neutron_db_user: neutron
+neutron_db_pass: 9e9ff1dadaed81c0
+
+
+# all user
+admin_user: admin
+admin_pass: ccc8db2428af15915444
+demo_user: dev3
+demo_pass: kaixin
+glance_user: glance
+glance_pass: d89b496153d50333
+nova_user: nova
+nova_pass: 5fba3a063fb96a1e
+neutron_user: neutron
+neutron_pass: 9e9ff1dadaed81c0
+
+
+# neutron
+metadata_proxy_shared_secret: 3fd7248b37c43083

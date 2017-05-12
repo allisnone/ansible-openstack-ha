@@ -1,0 +1,35 @@
+---
+
+- name: install packages
+  yum: name={{ item }} state=present
+  with_items:
+  - haproxy
+  - keepalived
+  tags: haproxy-install
+
+- name: configure haproxy
+  template: src=haproxy.j2 dest=/etc/haproxy/haproxy.cfg force=yes
+  tags: haproxy-config
+
+- name: configure controller node-01
+  template: src=keepalived-node-01.j2 dest=/etc/keepalived/keepalived.conf force=yes
+  when: "hostname == 'con-itools-node-01'"
+  tags: haproxy-config
+
+- name: configure controller node-02
+  template: src=keepalived-node-02.j2 dest=/etc/keepalived/keepalived.conf force=yes
+  when: "hostname == 'con-itools-node-02'"
+  tags: haproxy-config
+
+- name: configure controller node-03
+  template: src=keepalived-node-03.j2 dest=/etc/keepalived/keepalived.conf force=yes
+  when: "hostname == 'con-itools-node-03'"
+  tags: haproxy-config
+
+- name: start haproxy
+  service: name=haproxy state=started
+  tags: haproxy-run
+
+- name: start keepalived
+  service: name=keepalived state=started
+  tags: haproxy-run

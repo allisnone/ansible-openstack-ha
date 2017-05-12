@@ -1,0 +1,66 @@
+---
+
+- name: install nova packages
+  yum: name={{item}} state=installed
+  with_items:
+  - openstack-nova-api
+  - openstack-nova-cert
+  - openstack-nova-conductor
+  - openstack-nova-console
+  - openstack-nova-novncproxy
+  - openstack-nova-scheduler
+  - python-novaclient
+  retries: 5
+  delay: 2
+  tags: nova-setup
+
+- name: copy nova.conf
+  template: src=nova.conf.j2 dest=/etc/nova/nova.conf
+  tags: nova-config
+
+- name: create nova db
+  mysql_db: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ nova_db_name }} state=present
+  when: hostname == "con-itools-node-01"
+  tags: nova-db
+
+- name: grant nova user
+  mysql_user: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ nova_db_user }} password={{ nova_db_pass }} host="%" priv="{{nova_db_name}}.*:ALL" state=present
+  when: hostname == "con-itools-node-01"
+  tags: nova-db
+
+- name: nova db init
+  shell: /bin/sh -c "nova-manage db sync" nova
+  when: hostname == "con-itools-node-01"
+  tags: nova-db
+
+- name: chown nova log file
+  file: path=/var/log/nova owner=nova group=nova state=directory mode=0755
+  tags: nova-db
+
+- name: run nova service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+  - openstack-nova-api
+  - openstack-nova-cert
+  - openstack-nova-consoleauth
+  - openstack-nova-scheduler
+  - openstack-nova-conductor
+  - openstack-nova-novncproxy
+  retries: 5
+  delay: 2
+  tags: nova-run
+
+
+
+- name: restart nova service
+  service: name={{item}} state=restarted
+  with_items:
+  - openstack-nova-api
+  - openstack-nova-cert
+  - openstack-nova-consoleauth
+  - openstack-nova-scheduler
+  - openstack-nova-conductor
+  - openstack-nova-novncproxy
+  retries: 5
+  delay: 2
+  tags: nova-rerun

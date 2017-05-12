@@ -1,0 +1,71 @@
+global_defs {
+    router_id {{ hostname }}
+}
+
+vrrp_script haproxy {
+    script "killall -0 haproxy"
+    interval 2
+    weight -2
+}
+
+
+vrrp_instance VIP_EXT {
+    #监控网卡
+    interface {{ vip_drivers_ext }}
+    virtual_router_id 59
+    advert_int 1
+    # 节点权重
+    priority 103
+    # 节点状态
+    state MASTER
+    # 表示不抢占
+    nopreempt
+
+    virtual_ipaddress {
+        {{ vip_addr_ext }} dev {{ vip_drivers_ext }}
+    }
+
+    unicast_src_ip  {{ groups[['controller'][0]][2] }}
+
+    unicast_peer {
+        {{ groups[['controller'][0]][0] }}
+        {{ groups[['controller'][0]][1] }}
+    }
+
+    track_script {
+        haproxy
+    }
+}
+
+
+vrrp_instance VIP_INT {
+    #监控网卡
+    interface {{ vip_drivers_int }}
+    virtual_router_id 60
+    advert_int 1
+    # 节点权重
+    priority 103
+    # 节点状态
+    state MASTER
+    # 表示不抢占
+    nopreempt
+
+    virtual_ipaddress {
+        {{ vip_addr_int }} dev {{ vip_drivers_int }}
+    }
+
+
+    unicast_src_ip  {{ hostname }}
+
+    unicast_peer {
+{%for host in groups['controller']%}
+{% if hostvars[host]['hostname'] !=  hostname   %}
+        {{ hostvars[host]['hostname'] }}
+{% endif %}
+{% endfor %}
+    }
+
+    track_script {
+        haproxy
+    }
+}

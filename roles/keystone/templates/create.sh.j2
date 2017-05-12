@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+export OS_TOKEN={{ keystone_auth }}
+export OS_URL=http://{{ vip_addr_int }}:35357/v3
+export OS_IDENTITY_API_VERSION=3
+
+
+openstack service create --name keystone --description "OpenStack Identity" identity
+openstack project create --domain default --description "Service Project" service
+openstack project create --domain default --description "Demo Project" demo
+openstack service create --name glance --description "OpenStack Image service" image
+openstack service create --name nova --description "OpenStack Compute" compute
+openstack service create --name neutron --description "OpenStack Networking" network
+
+openstack endpoint create --region RegionOne identity public http://{{ vip_addr_int }}:5000/v2.0
+openstack endpoint create --region RegionOne identity internal http://{{ vip_addr_int }}:5000/v2.0
+openstack endpoint create --region RegionOne identity admin http://{{ vip_addr_int }}:35357/v2.0
+
+openstack endpoint create --region RegionOne image public http://{{ vip_addr_int }}:9292
+openstack endpoint create --region RegionOne image internal http://{{ vip_addr_int }}:9292
+openstack endpoint create --region RegionOne image admin http://{{ vip_addr_int }}:9292
+
+openstack endpoint create --region RegionOne compute public http://{{ vip_addr_int }}:8774/v2/%\(tenant_id\)s
+openstack endpoint create --region RegionOne compute internal http://{{ vip_addr_int }}:8774/v2/%\(tenant_id\)s
+openstack endpoint create --region RegionOne compute admin http://{{ vip_addr_int }}:8774/v2/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne network public http://{{ vip_addr_int }}:9696
+openstack endpoint create --region RegionOne network internal http://{{ vip_addr_int }}:9696
+openstack endpoint create --region RegionOne network admin http://{{ vip_addr_int }}:9696
+
+openstack project create --domain default --description "Admin Project" admin
+openstack user create {{ admin_user }} --domain default --password {{ admin_pass }}
+openstack role create admin
+openstack role add --project admin --user {{ admin_user }} admin
+
+openstack user create {{ demo_user }} --domain default --password {{ demo_pass }}
+openstack role create user
+openstack role add --project demo --user {{ demo_user }} user
+
+openstack user create {{ glance_user }} --domain default --password {{ glance_pass }}
+openstack role add --project service --user {{ glance_user }} admin
+
+openstack user create {{ nova_user }} --domain default --password {{ nova_pass }}
+openstack role add --project service --user {{ nova_user }} admin
+
+openstack user create {{ neutron_user }} --domain default --password {{ neutron_pass }}
+openstack role add --project service --user {{ neutron_user }} admin

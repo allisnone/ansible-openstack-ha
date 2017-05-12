@@ -1,0 +1,72 @@
+---
+
+- name: install package
+  yum: name={{ item }}
+  with_items:
+  - openstack-glance
+  - python-glance
+  - python-glanceclient
+  retries: 5
+  delay: 2
+  tags: package-setup
+
+- name: copy glance-api
+  template: src=glance-api.conf.j2 dest=/etc/glance/glance-api.conf force=yes
+  tags: glance-config
+
+- name: copy glance-registry
+  template: src=glance-registry.conf.j2 dest=/etc/glance/glance-registry.conf force=yes
+  tags: glance-config
+
+- name: create glance db
+  mysql_db: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ glance_db_name }} state=present
+  when: hostname == "con-itools-node-01"
+  tags: glance-db-init
+
+- name: grant glance user
+  mysql_user: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ glance_db_user }} password={{ glance_db_pass }} host="%" priv="{{glance_db_name}}.*:ALL" state=present
+  when: hostname == "con-itools-node-01"
+  tags: glance-db-init
+
+- name: glance db init
+  shell: /bin/sh -c "glance-manage db_sync" glance
+  when: hostname == "con-itools-node-01"
+  tags: glance-db-init
+
+- name: chown glance log file
+  file: path=/var/log/glance owner=glance group=glance state=directory mode=0755
+  tags: glance-db-init
+
+- name: run glance service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+  - openstack-glance-api
+  - openstack-glance-registry
+  tags: glance-run
+
+- name: copy cirrors img
+  copy: src=cirros-0.3.1-x86_64-disk.img dest=/tmp/cirros-0.3.1-x86_64-disk.img
+  when: hostname == "con-itools-node-01"
+  tags: glance-test
+
+- name: registry test img
+  glance:
+    name=cirros
+    file=/tmp/cirros-0.3.1-x86_64-disk.img
+    format=qcow2
+    is_public=true
+    auth_url=http://{{ vip_addr_int }}:5000/v2.0 username={{admin_user}} tenant_name=admin password={{ admin_pass }} region=RegionOne endpoint_type=publicURL
+  register: test_img
+  when: hostname == "con-itools-node-01"
+  tags: glance-test
+
+- debug: msg={{test_img}}
+  tags: glance-test
+
+
+- name: run glance service
+  service: name={{item}} state=restarted enabled=yes
+  with_items:
+  - openstack-glance-api
+  - openstack-glance-registry
+  tags: glance-rerun

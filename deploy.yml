@@ -1,0 +1,26 @@
+---
+
+- hosts: all
+  gather_facts: false
+  remote_user: root
+  roles:
+  - common
+
+- hosts: controller
+  gather_facts: true
+  remote_user: root
+  roles:
+  - haproxy
+  # - rabbitmq
+  # - mariadb
+  # - keystone
+  # - glance
+  # - nova
+  # - neutron
+
+# - hosts: compute
+#   gather_facts: true
+#   remote_user: root
+#   roles:
+#   - nova-compute
+#   - neutron-compute

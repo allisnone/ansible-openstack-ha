@@ -1,0 +1,76 @@
+---
+
+- name: install neutron packages
+  yum: name={{ item }} state=installed
+  with_items:
+  - openstack-neutron
+  - openstack-neutron-ml2
+  - openstack-neutron-linuxbridge
+  - python-neutronclient
+  - ebtables
+  - ipset
+  retries: 5
+  delay: 2
+  tags: neutron-setup
+
+- name: copy neutron config
+  template: src={{ item.name }} dest={{ item.key }} force=yes
+  with_items:
+  - {name: 'neutron.conf.j2', key: '/etc/neutron/neutron.conf'}
+  - {name: 'ml2_conf.ini.j2', key: '/etc/neutron/plugins/ml2/ml2_conf.ini'}
+  - {name: 'dhcp_agent.ini.j2', key: '/etc/neutron/dhcp_agent.ini'}
+  - {name: 'linuxbridge_agent.ini.j2', key: '/etc/neutron/plugins/ml2/linuxbridge_agent.ini'}
+  - {name: 'l3_agent.ini.j2', key: '/etc/neutron/l3_agent.ini'}
+  - {name: 'metadata_agent.ini.j2', key: '/etc/neutron/metadata_agent.ini'}
+  tags: neutron-config
+
+- name: copy neutron dhcp_mtu
+  copy: content='dhcp-option-force=26,1450' dest=/etc/neutron/dnsmasq-neutron.conf
+  tags: neutron-config
+
+- name: create ml2_conf.ini link
+  file: src=/etc/neutron/plugins/ml2/ml2_conf.ini dest=/etc/neutron/plugin.ini state=link
+  tags: neutron-config
+
+- name: create neutron db
+  mysql_db: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ neutron_db_name }} state=present
+  when: hostname == "con-itools-node-01"
+  tags: neutron-db
+
+- name: grant neutron user
+  mysql_user: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ neutron_db_user }} password={{ neutron_db_pass }} host="%" priv="{{neutron_db_name}}.*:ALL" state=present
+  when: hostname == "con-itools-node-01"
+  tags: neutron-db
+
+- name: neutron db init
+  shell: /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
+  when: hostname == "con-itools-node-01"
+  tags: neutron-db
+
+- name: chown neutron log file
+  file: path=/var/log/neutron owner=neutron group=neutron state=directory mode=0755
+  tags: neutron-db
+
+- name: run neutron service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+  - neutron-server
+  - neutron-linuxbridge-agent
+  - neutron-dhcp-agent
+  - neutron-metadata-agent
+  - neutron-l3-agent.service
+  retries: 5
+  delay: 2
+  tags: neutron-run
+
+- name: restart neutron service
+  service: name={{item}} state=restarted
+  with_items:
+  - neutron-server
+  - neutron-linuxbridge-agent
+  - neutron-dhcp-agent
+  - neutron-metadata-agent
+  - neutron-l3-agent.service
+  retries: 5
+  delay: 2
+  tags: neutron-rerun

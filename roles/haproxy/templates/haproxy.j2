@@ -1,0 +1,145 @@
+global
+  chroot  /var/lib/haproxy
+  daemon
+  group  haproxy
+  maxconn  4000
+  pidfile  /var/run/haproxy.pid
+  user  haproxy
+  stats socket /var/lib/haproxy/stats
+
+defaults
+  log  global
+  mode  http
+  maxconn  4000
+  option  redispatch
+  retries  3
+  timeout  http-request 10s
+  timeout  queue 1m
+  timeout  connect 10s
+  timeout  client 1m
+  timeout  server 1m
+  timeout  check 10s
+
+listen stats
+  bind {{ vip_addr_ext }}:1080
+  stats enable
+  stats refresh 30s
+  stats uri /
+  stats hide-version
+  stats admin if TRUE
+
+listen rabbitmq_cluster
+  bind {{ vip_addr_int }}:5672
+  mode tcp
+  option tcpka
+  balance leastconn
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:5672 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+listen dashboard_cluster
+  bind {{ vip_addr_ext }}:80
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:80 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+ listen galera_cluster
+  bind {{ vip_addr_int }}:3306
+  balance  leastconn
+  mode tcp
+  option tcpka
+  option mysql-check user haproxy
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:3306 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+ listen glance_api_cluster
+  bind {{ vip_addr_int }}:9292
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:9292 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+ listen glance_registry_cluster
+  bind {{ vip_addr_int }}:9191
+  balance  source
+  option  tcpka
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:9191 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+ listen keystone_admin_cluster
+  bind {{ vip_addr_int }}:35357
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:35357 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+listen keystone_public_internal_cluster
+  bind {{ vip_addr_int }}:5000
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:5000 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+listen nova_compute_api_cluster
+  bind {{ vip_addr_int }}:8774
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:8774 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+listen nova_metadata_api_cluster
+  bind {{ vip_addr_int }}:8775
+  balance  source
+  option  tcpka
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:8775 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+listen nova_vncproxy_cluster
+  bind {{ vip_addr_ext }}:6080
+  balance  source
+  option  tcpka
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:6080 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+ listen neutron_api_cluster
+  bind {{ vip_addr_int }}:9696
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:9696 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+listen cinder_api_cluster
+  bind {{ vip_addr_int }}:8776
+  balance  source
+  option  tcpka
+  option  httpchk
+  option  tcplog
+{% for host in groups['controller'] %}
+  server {{ hostvars[host]['hostname'] }} {{ hostvars[host]['hostname'] }}:8776 check inter 2000 rise 2 fall 5
+{% endfor %}

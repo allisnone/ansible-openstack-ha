@@ -1,0 +1,80 @@
+---
+
+- name: delete repo file
+  shell: rm -f /etc/yum.repos.d/*.repo
+
+- name: change update repo
+  copy: src=itools-centos7.repo dest=/etc/yum.repos.d/itools-centos7.repo
+
+- name: yum update
+  yum: name=* state=latest
+
+- name: delete repo file
+  shell: rm -f /etc/yum.repos.d/*.repo
+
+- name: Set Hostname
+  hostname: name={{hostname}}
+
+- name: Set all node hosts
+  copy: src=hosts dest=/etc/hosts force=yes
+
+- name: Set SElinux
+  selinux: state=disabled
+
+- name: Stop firewalld
+  service: name=firewalld state=stopped enabled=no
+
+- name: Install iptables ntp rsync wget telnet lrzsz
+  yum: name={{ item }} state=installed
+  with_items:
+  - iptables-services
+  - ntp
+  - rsync
+  - wget
+  - telnet
+  - lrzsz
+  - net-tools
+  - python-openstackclient
+  - openstack-selinux
+  - openstack-utils
+
+- name: Enable iptables
+  service: name=iptables state=started enabled=yes
+
+- name: upload iptables.sh
+  copy: src=iptables.sh dest=/tmp/iptables.sh force=yes owner=root group=root mode=0755
+
+- name: set iptables.sh
+  shell: /bin/sh /tmp/iptables.sh
+
+- name: Save iptables
+  command: service iptables save
+
+- name: Restart iptables
+  service: name=iptables state=restarted
+
+- name: Set cron
+  cron: name="set ntp service" minute="*/30" job="/usr/sbin/ntpdate 10.10.10.107 > /dev/null"
+
+- name: Setting up sysctl.conf on controller nodes
+  sysctl: name={{ item.name }} value={{ item.value }} state=present reload=yes
+  with_items:
+   - { name: "net.ipv4.conf.default.rp_filter", value: 0 }
+   - { name: "net.ipv4.conf.all.rp_filter", value: 0 }
+   - { name: "net.ipv4.ip_forward", value: 1 }
+  when: "'controller' in group_names"
+
+- name: Make haproxy bindable on non local addresses
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: 1
+    sysctl_set: yes
+    state: present
+  when: "'controller' in group_names"
+
+- name: Setting up sysctl.conf on compute nodes
+  sysctl: name={{ item.name }} value={{ item.value }} state=present reload=yes
+  with_items:
+   - { name: net.ipv4.conf.all.rp_filter, value: 0 }
+   - { name: net.ipv4.conf.default.rp_filter=0, value: 0 }
+  when: "'compute' in group_names"

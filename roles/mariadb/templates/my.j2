@@ -1,0 +1,36 @@
+[mysqld]
+datadir=/data2/mysql_data
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+bind-address={{ hostname }}
+
+binlog_format=ROW
+max_connections=1000
+max_binlog_size=200M
+expire_logs_days=7
+
+collation-server = utf8_general_ci
+init-connect = 'SET NAMES utf8'
+character-set-server = utf8
+
+# InnoDB Configuration
+innodb_file_per_table
+default_storage_engine=innodb
+innodb_autoinc_lock_mode=2
+innodb_flush_log_at_trx_commit=0
+innodb_buffer_pool_size=122M
+
+# Galera Cluster Configuration
+wsrep_on=ON
+wsrep_slave_threads=2
+wsrep_provider=/usr/lib64/galera/libgalera_smm.so
+wsrep_provider_options="pc.recovery=TRUE;gcache.size=300M"
+wsrep_node_name={{ hostname }}
+wsrep_node_address={{ hostname }}
+wsrep_cluster_name="openstack_cluster"
+wsrep_cluster_address="gcomm://
+{%- for host in groups['controller'] -%}
+{{ hostvars[host]['hostname']}}
+{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}"
+wsrep_sst_method=rsync

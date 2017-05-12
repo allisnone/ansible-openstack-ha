@@ -1,0 +1,23 @@
+[base]
+name=CentOS-$releasever - Base - repo.itools.cn
+baseurl=http://repo.itools.cn/centos/7/os/x86_64/
+enabled=1
+gpgcheck=0
+
+[updates]
+name=CentOS-$releasever - Updates - repo.itools.cn
+baseurl=http://repo.itools.cn/centos/7/updates/x86_64/
+enabled=1
+gpgcheck=0
+
+[epel]
+name=Extra Packages for Enterprise Linux 7 - repo.itools.cn
+baseurl=http://repo.itools.cn/centos/epel/7/
+enabled=1
+gpgcheck=0
+
+[openstack-Liberty]
+name=CentOS-$releasever - openstack - repo.itools.cn
+baseurl=http://repo.itools.cn/centos/7/cloud/x86_64/openstack-liberty
+enabled=1
+gpgcheck=0

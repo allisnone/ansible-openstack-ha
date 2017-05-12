@@ -1,0 +1,5 @@
+
+#
+ansible all -m service -a 'name=rabbitmq-server state=stopped'
+ansible all -m yum -a 'name=rabbitmq-server state=removed'
+ansible all -m file -a 'path=/var/lib/rabbitmq state=absent'

@@ -1,0 +1,11 @@
+[DEFAULT]
+
+interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+external_network_bridge =
+ha_vrrp_health_check_interval = 30
+
+agent_mode = legacy
+ha_confs_path = $state_path/ha_confs
+
+
+[AGENT]

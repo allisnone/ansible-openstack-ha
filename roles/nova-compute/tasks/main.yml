@@ -1,0 +1,16 @@
+---
+
+- name: install package
+  yum: name={{ item }} state=installed
+  with_items:
+  - openstack-nova-compute
+  - sysfsutils
+  retries: 5
+  delay: 2
+  tags: nova-setup
+
+- name: copy nova.conf
+  template: src=nova.conf.j2 dest=/etc/nova/nova.conf force=yes
+  tags: nova-config
+
+- name:

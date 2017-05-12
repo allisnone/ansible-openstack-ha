@@ -1,0 +1,24 @@
+---
+
+- name: install package
+  yum: name={{ item }} state=installed
+  with_items:
+  - openstack-dashboard
+  retries: 5
+  delay: 2
+  tags: package-setup
+
+- name: copy openstack-dashboard.setting
+  template: src=local_settings dest=/etc/openstack-dashboard/local_settings force=yes
+  tags: dashboard-config
+
+- name: copy openstack-dashboard.conf
+  template: src=openstack-dashboard.conf dest=/etc/httpd/conf.d/openstack-dashboard.conf force=yes
+  tags: dashboard-config
+
+- name: restart httpd memcached
+  service: name={{ item }} state=restarted
+  with_items:
+  - memcached
+  - httpd
+  tags: dashboard-rerun
