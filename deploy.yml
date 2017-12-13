@@ -17,6 +17,7 @@
   # - glance
   # - nova
   # - neutron
+  # - cinder
 
 # - hosts: compute
 #   gather_facts: true
@@ -24,3 +25,9 @@
 #   roles:
 #   - nova-compute
 #   - neutron-compute
+
+# - hosts: cinder-volume
+#   gather_facts: true
+#   remote_user: root
+#   roles:
+#   - cinder-volume
