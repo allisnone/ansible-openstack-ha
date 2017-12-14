@@ -11,7 +11,7 @@
   gather_facts: true
   remote_user: root
   roles:
-  - ssh-copy-id
+#  - ssh-copy-id
   - haproxy
   - rabbitmq
   - mariadb
