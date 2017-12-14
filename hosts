@@ -1,19 +1,19 @@
-#ssh-copy-id -i ~/.ssh/id_rsa.pub username@192.168.115.100
+#ssh-copy-id -i ~/.ssh/id_rsa.pub username@192.168.142.100
 [all]
-192.168.115.100  hostname=con-itools-node-01
-192.168.115.101  hostname=con-itools-node-02
-192.168.115.102  hostname=con-itools-node-03
-#192.168.115.103  hostname=com-itools-node-01
+192.168.142.100  hostname=con-itools-node-01
+192.168.142.101  hostname=con-itools-node-02
+192.168.142.102  hostname=con-itools-node-03
+#192.168.142.103  hostname=com-itools-node-01
 
 
 [controller]
-192.168.115.100
-192.168.115.101
-192.168.115.102
+192.168.142.100
+192.168.142.101
+192.168.142.102
 
 [compute]
-#192.168.115.103
+#192.168.142.103
 
 
 [cinder-volume]
-#192.168.115.103
+#192.168.142.103

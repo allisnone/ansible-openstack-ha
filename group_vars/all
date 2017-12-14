@@ -1,9 +1,9 @@
 
 # vip
-vip_drivers_ext: eno16777728
-vip_drivers_int: eno33554952
-vip_addr_ext: 10.10.5.100
-vip_addr_int: 172.16.0.130
+vip_drivers_ext: eth0
+vip_drivers_int: eth3
+vip_addr_ext: 192.168.115.194
+vip_addr_int: 192.168.142.194
 
 # mysql
 mysql_login_user: root
