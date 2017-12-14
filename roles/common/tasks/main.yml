@@ -1,12 +1,12 @@
 ---
-- name: Setup OpenStack Ocata repository.
+- name: Setup OpenStack Ocata repository
   yum: name=centos-release-openstack-ocata state=installed
-    
+  
 #- name: delete repo file
 #  shell: rm -f /etc/yum.repos.d/*.repo
 
 #- name: change update repo
-  copy: src=itools-centos7.repo dest=/etc/yum.repos.d/itools-centos7.repo
+#  copy: src=itools-centos7.repo dest=/etc/yum.repos.d/itools-centos7.repo
 
 - name: yum update
   yum: name=* state=latest
