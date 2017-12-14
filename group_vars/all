@@ -1,7 +1,7 @@
 
 # vip
-vip_drivers_ext: eth0
-vip_drivers_int: eth3
+vip_drivers_ext: ext_br0
+vip_drivers_int: inter_br0
 vip_addr_ext: 192.168.115.194
 vip_addr_int: 192.168.142.194
 
