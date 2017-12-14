@@ -1,11 +1,11 @@
 [linux_bridge]
 
-physical_interface_mappings = public:eth0
+physical_interface_mappings = public:ens33
 
 [vxlan]
 
 enable_vxlan = True
-local_ip = {{ ansible_inter_br0.ipv4.address }}
+local_ip = {{ ansible_ens35.ipv4.address }}
 l2_population = True
 
 [agent]

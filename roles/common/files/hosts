@@ -1,7 +1,7 @@
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 10.10.0.205     repo.itools.cn
-192.168.142.100    con-itools-node-01
-192.168.142.101    con-itools-node-02
-192.168.142.102    con-itools-node-03
-192.168.142.103    com-itools-node-01
+192.168.142.147    con-itools-node-01
+192.168.142.150    con-itools-node-02
+192.168.142.152    con-itools-node-03
+192.168.142.154    com-itools-node-01
