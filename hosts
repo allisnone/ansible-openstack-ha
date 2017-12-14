@@ -3,7 +3,7 @@
 192.168.142.100  hostname=con-itools-node-01
 192.168.142.101  hostname=con-itools-node-02
 192.168.142.102  hostname=con-itools-node-03
-#192.168.142.103  hostname=com-itools-node-01
+192.168.142.103  hostname=com-itools-node-01
 
 
 [controller]
@@ -12,8 +12,8 @@
 192.168.142.102
 
 [compute]
-#192.168.142.103
+192.168.142.103
 
 
 [cinder-volume]
-#192.168.142.103
+192.168.142.103
