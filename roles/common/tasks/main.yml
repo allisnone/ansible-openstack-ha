@@ -56,8 +56,8 @@
 - name: Restart iptables
   service: name=iptables state=restarted
 
-- name: Stop iptables
-  service: name=iptables state=stopped enabled=no
+#- name: Stop iptables
+#  service: name=iptables state=stopped enabled=no
   
 - name: Set cron
   cron: name="set ntp service" minute="*/30" job="/usr/sbin/ntpdate 10.10.10.107 > /dev/null"
