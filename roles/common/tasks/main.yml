@@ -9,7 +9,8 @@
 #  copy: src=itools-centos7.repo dest=/etc/yum.repos.d/itools-centos7.repo
 
 - name: yum update
-  yum: name=* state=latest
+  #yum: name=* state=latest
+  shell: yum update
 
 #- name: delete repo file
 #  shell: rm -f /etc/yum.repos.d/*.repo
