@@ -1,16 +1,17 @@
 ---
 
-#- hosts: all
-#  gather_facts: false
-#  remote_user: root
-#  roles:
-#  #- common
-
-- hosts: controller
-  gather_facts: true
+- hosts: all
+  gather_facts: false
   remote_user: root
   roles:
-  - ssh-copy-id
+   - ssh-copy-id
+#  - common
+
+#- hosts: controller
+#  gather_facts: true
+#  remote_user: root
+#  roles:
+#  - ssh-copy-id
   #- haproxy
   # - rabbitmq
   # - mariadb
