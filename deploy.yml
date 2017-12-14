@@ -12,9 +12,9 @@
   remote_user: root
   roles:
 #  - ssh-copy-id
-  - haproxy
-  - rabbitmq
-  - mariadb
+#  - haproxy
+#  - rabbitmq
+#  - mariadb
   - keystone
   - glance
   - nova
