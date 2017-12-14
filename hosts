@@ -1,18 +1,18 @@
 [all]
-10.10.5.101  hostname=con-itools-node-01
-10.10.5.102  hostname=con-itools-node-02
-10.10.5.103  hostname=con-itools-node-03
-10.10.6.101  hostname=com-itools-node-01
+192.168.142.100  hostname=con-itools-node-01
+192.168.142.101  hostname=con-itools-node-02
+192.168.142.102  hostname=con-itools-node-03
+192.168.142.103  hostname=com-itools-node-01
 
 
 [controller]
-10.10.5.101
-10.10.5.102
-10.10.5.103
+192.168.142.100
+192.168.142.101
+192.168.142.102
 
 [compute]
-10.10.6.101
+192.168.142.103
 
 
 [cinder-volume]
-10.10.6.101
+192.168.142.103
