@@ -4,8 +4,8 @@
   gather_facts: false
   remote_user: root
   roles:
-   - ssh-copy-id
-#  - common
+  #- ssh-copy-id
+  - common
 
 #- hosts: controller
 #  gather_facts: true
