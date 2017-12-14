@@ -1,8 +1,6 @@
 ---
 - name: Setup OpenStack Ocata repository.
-  yum:
-    name: centos-release-openstack-ocata
-    state: installed
+  yum: name=centos-release-openstack-ocata state=installed
     
 #- name: delete repo file
 #  shell: rm -f /etc/yum.repos.d/*.repo
