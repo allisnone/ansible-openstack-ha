@@ -4,13 +4,13 @@
   gather_facts: false
   remote_user: root
   roles:
-  - ssh-copy-id
   #- common
 
 - hosts: controller
   gather_facts: true
   remote_user: root
   roles:
+  - ssh-copy-id
   #- haproxy
   # - rabbitmq
   # - mariadb
