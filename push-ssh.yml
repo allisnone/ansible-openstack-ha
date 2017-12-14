@@ -1,5 +1,4 @@
  # Using alternate directory locations:
- 
   - hosts: all
     user: root
     tasks:
