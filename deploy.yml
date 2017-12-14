@@ -7,19 +7,19 @@
   #- ssh-copy-id
   - common
 
-#- hosts: controller
-#  gather_facts: true
-#  remote_user: root
-#  roles:
-#  - ssh-copy-id
-  #- haproxy
-  # - rabbitmq
-  # - mariadb
-  # - keystone
-  # - glance
-  # - nova
-  # - neutron
-  # - cinder
+- hosts: controller
+  gather_facts: true
+  remote_user: root
+  roles:
+  - ssh-copy-id
+  - haproxy
+  - rabbitmq
+  - mariadb
+  - keystone
+  - glance
+  - nova
+  - neutron
+#  - cinder
 
 # - hosts: compute
 #   gather_facts: true
