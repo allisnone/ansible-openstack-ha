@@ -1,0 +1,88 @@
+---
+
+- name: Install keystone
+  yum: name={{item}} state=present
+  with_items:
+  - openstack-keystone
+  - httpd
+  - mod_wsgi
+  - memcached
+  - python-memcached
+  - python-openstackclient
+  retries: 5
+  delay: 2
+  tags: keystone-setup
+
+- name: copy wsgi_keystone
+  template: src=wsgi-keystone.conf dest=/etc/httpd/conf.d/wsgi-keystone.conf owner=apache group=apache force=yes
+  tags: keystone-init
+
+- name: end httpd 80
+  lineinfile: dest=/etc/httpd/conf/httpd.conf regexp='^Listen:80$' line='#Listen:80'
+
+- name: end httpd 80
+  lineinfile: dest=/etc/httpd/conf/httpd.conf regexp='^Listen 80$' line='#Listen 80'
+  
+- name: set httpd hostname
+  lineinfile: dest=/etc/httpd/conf/httpd.conf regexp='^#ServerName www.example.com:80$' line='ServerName {{ hostname }}'
+
+- name: copy keystone.conf
+  template: src=keystone.conf dest=/etc/keystone/keystone.conf owner=keystone group=keystone force=yes
+  tags: keystone-init
+
+- name: copy memcached.conf
+  template: src=memcached dest=/etc/sysconfig/memcached force=yes
+  tags: keystone-init
+
+- name: clean user token
+  cron: minute="0" hour='*/1' name='token_flush' user='keystone' job="/usr/bin/keystone-manage token_flush >/var/log/keystone/keystone-tokenflush.log 2>&1"
+  tags: keystone-init
+
+- name: create keystone db
+  mysql_db: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ keystone_db_name }} state=present
+  when: hostname == "con-itools-node-01"
+  tags: keystone-db
+
+- name: grant keystone user
+  mysql_user: login_user={{ mysql_login_user }} login_password={{ mysql_login_pass }} name={{ keystone_db_user }} password={{ keystone_db_pass }} host="%" priv="{{keystone_db_name}}.*:ALL" state=present
+  when: hostname == "con-itools-node-01"
+  tags: keystone-db
+
+- name: init keystone db
+  shell: /bin/bash -c "keystone-manage db_sync" keystone
+  when: hostname == "con-itools-node-01"
+  tags: keystone-db
+
+- name: chown keystone log file
+  file: path=/var/log/keystone owner=keystone group=keystone state=directory mode=0755
+  tags: keystone-db
+
+- name: start service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+  - memcached
+  - httpd
+  tags: keystone-run
+
+- name: register service endpoint
+  template: src=create.sh.j2 dest=/tmp/create.sh owner=root group=root mode=0755
+  when: hostname == "con-itools-node-01"
+  tags: keystone-register
+
+- name: register service endpoint
+  shell: /bin/sh /tmp/create.sh
+  register: create_sh
+  when: hostname == "con-itools-node-01"
+  tags: keystone-register
+
+- name: create admin-openrc.sh
+  template: src=admin-openrc.sh.j2 dest=/root/admin-openrc.sh force=yes
+  when: hostname == "con-itools-node-01"
+  tags: keystone-sh
+
+- name: create demo-openrc.sh
+  template: src=demo-openrc.sh.j2 dest=/root/demo-openrc.sh force=yes
+  when: hostname == "con-itools-node-01"
+  tags: keystone-sh
+
+- debug: msg={{ create_sh }}
