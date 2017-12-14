@@ -1,3 +1,4 @@
+#ssh-keygen -t rsa
 #ssh-copy-id -i ~/.ssh/id_rsa.pub username@192.168.142.100
 [all]
 192.168.142.147  hostname=con-itools-node-01

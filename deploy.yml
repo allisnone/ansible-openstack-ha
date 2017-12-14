@@ -14,7 +14,7 @@
 #  - ssh-copy-id
   - haproxy
   - rabbitmq
-#  - mariadb
+  - mariadb
   - keystone
   - glance
   - nova
