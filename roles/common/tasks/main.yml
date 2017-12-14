@@ -60,7 +60,7 @@
   service: name=iptables state=stopped enabled=no
   
 - name: Set cron
-  cron: name="set ntp service" minute="*/30" job="/usr/sbin/ntpdate 10.10.10.107 > /dev/null"
+  cron: name="set ntp service" minute="*/30" job="/usr/sbin/ntpdate 192.168.142.100 > /dev/null"
 
 - name: Setting up sysctl.conf on controller nodes
   sysctl: name={{ item.name }} value={{ item.value }} state=present reload=yes
