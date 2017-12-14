@@ -41,21 +41,24 @@
   - openstack-selinux
   - openstack-utils
 
-- name: Enable iptables
-  service: name=iptables state=started enabled=yes
+#- name: Enable iptables
+#  service: name=iptables state=started enabled=yes
 
-- name: upload iptables.sh
-  copy: src=iptables.sh dest=/tmp/iptables.sh force=yes owner=root group=root mode=0755
+#- name: upload iptables.sh
+#  copy: src=iptables.sh dest=/tmp/iptables.sh force=yes owner=root group=root mode=0755
 
-- name: set iptables.sh
-  shell: /bin/sh /tmp/iptables.sh
+#- name: set iptables.sh
+#  shell: /bin/sh /tmp/iptables.sh
 
-- name: Save iptables
-  command: service iptables save
+#- name: Save iptables
+#  command: service iptables save
 
-- name: Restart iptables
-  service: name=iptables state=restarted
+#- name: Restart iptables
+#  service: name=iptables state=restarted
 
+- name: Stop iptables
+  service: name=iptables state=stopped enabled=no
+  
 - name: Set cron
   cron: name="set ntp service" minute="*/30" job="/usr/sbin/ntpdate 10.10.10.107 > /dev/null"
 
